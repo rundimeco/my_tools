@@ -9,20 +9,22 @@ import json
 
 
 def moyenne(liste, s=0):
+  ###Function example: getting mean from alist of numbers
   for a in liste:s+=a
   return s/len(liste)
 
-
 def effectif_from_list(liste):
+  ###Getting items with their absolute frequency
   dic = {}
   for elem in liste:
     dic.setdefault(elem, 0)
     dic[elem]+=1
   return dic
 
-def open_utf8(path,l=False):
+def open_utf8(path,lines=False):
+  ###Showing usage of codecs (useful for utf-8)
   f = codecs.open(path,'r','utf-8')
-  if  l==True:
+  if  lines==True:
     out = f.readlines()
     out = [re.sub("\n|\r","",x) for x in out]
   else:
@@ -35,6 +37,7 @@ def get_filename(chaine):
   return elems[len(elems)-1]
 
 def write_utf8(path, out, verbose =True, is_json = False):
+  ### Writing in a file
   w = codecs.open(path,'w','utf-8')
   if is_json==False:
     w.write(out)
@@ -45,7 +48,7 @@ def write_utf8(path, out, verbose =True, is_json = False):
     print("Output written in '%s'"%path)
 
 def tag_sentence(sent):
-  ##Tree tagger wrapper
+  ###Very simple tree tagger wrapper, the cmd variable needs to be adapted
   prep_sent = re.sub("\n|'|\"|-", " ", sent)
   cmd = "echo '%s' | ../external_tools/tree-tagger/cmd/tree-tagger-french >toto.tag"%prep_sent
   os.system(cmd)
@@ -62,6 +65,7 @@ def load_json(path):
   return struct
 
 def do_we_force(out_name):
+  ### Example usage of input for controlling overwriting of existing files
   if os.path.exists(out_name):
     q = "Output name (%s) already exists, should we process anyway ?"%out_name
     msg = input(q)
