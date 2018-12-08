@@ -7,54 +7,11 @@ import re
 import os
 import json
 
-def lcs(S,T):
-  m = len(S)
-  n = len(T)
-  counter = [[0]*(n+1) for x in range(m+1)]
-  longest = 0
-  lcs_set = set()
-  for i in range(m):
-    for j in range(n):
-      if S[i] == T[j]:
-        c = counter[i][j] + 1
-        counter[i+1][j+1] = c
-        if c > longest:
-          lcs_set = set()
-          longest = c
-          lcs_set.add(S[i-c+1:i+1])
-        elif c == longest:
-          lcs_set.add(S[i-c+1:i+1])
-  if len(lcs_set)==0:
-    return [""]
-  return list(lcs_set)
 
 def moyenne(liste, s=0):
   for a in liste:s+=a
   return s/len(liste)
 
-def get_arff(dic):
-  chaine = "@RELATION %s\n\n"%dic["relation"]
-  sort_features = sorted(dic["features"])
-  cpt_feat = 0
-  for s in sort_features:
-    val = dic["features"][s]#prevoir numeric
-    name = "%s_"%str(cpt_feat)
-    cpt_feat+=1
-    for e in val:
-      name+=str(e)
-    name=re.sub(" ","_",name)
-    if dic["numeric"]==False:typ = "{%s}"%",".join(val)
-    else:typ = "NUMERIC"
-    chaine+="@ATTRIBUTE %s %s\n"%(str(name),typ)
-  classes = "@ATTRIBUTE class {%s}\n"%",".join(dic["classes"])
-  chaine+=classes
-  chaine+="\n@DATA\n"
-  for instance in dic["instances"]:
-    if dic["sparse"]==True:
-      chaine+="{%s}\n"%",".join(instance)
-    else:
-      chaine+="%s\n"%",".join(instance)
-  return chaine
 
 def effectif_from_list(liste):
   dic = {}
