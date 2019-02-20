@@ -7,9 +7,16 @@ import re
 import os
 import json
 
+def variance(tableau):
+    m=moyenne(tableau)
+    return moyenne([(x-m)**2 for x in tableau])
+
+def ecartype(tableau):
+  tableau = [float(x) for x in tableau]
+  return variance(tableau)**0.5
 
 def moyenne(liste, s=0):
-  ###Function example: getting mean from alist of numbers
+  ###Function example: getting mean from a list of numbers
   for a in liste:s+=a
   return s/len(liste)
 
