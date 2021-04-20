@@ -6,6 +6,64 @@ import codecs
 import re
 import os
 import json
+from htmldate import find_date
+def get_date(date_str):
+  dic_mois = months = {"Jan":"01", "Feb":"02", "Fév":"02", "Mar":"03", "Apri":"04", "Apr":"04", "Avr":"04", "Avri":"04", "May":"05", "Mai":"05", "June":"06", "Juin":"06", "July":"07", "Juil":"07", "Aug":"08", "Aoû":"08", "Augu":"08", "Août":"0_", "Sep":"09", "Sept":"09", "Oct":"10", "Octo":"10", "Nov":"11", "Nove":"11", "Dec":"12", "Déc":12, "Inco":"00"} 
+ #  date_format1 = find_date(date_str)
+  date_format_fr = re.findall("([0-9]{1,2}) ([A-Za-z][a-zéû]*) ([0-9]{4})", date_str)
+  if len(date_format_fr)>0:
+    date_format2 = date_format_fr[0]
+    annee = date_format2[2]
+    mois_str  = date_format2[1]
+    jour  = date_format2[0]
+  else:
+    date_format_en = re.findall("([A-Za-z][a-zéû]*) ([0-9]{1,2}), ([0-9]{4})", date_str)
+    if len(date_format_en)>0:
+      date_format2 = date_format_en[0]
+      annee = date_format2[2]
+      mois_str  = date_format2[0]
+      jour  = date_format2[1]
+    else:
+    #  try:
+     #   annee = re.findall(" [12][0-9]{3} ", date_str)[0]##too noisy
+      #except:
+      w = open("log_date.txt", "a")
+      w.write(date_str[:30]+"\n")
+      w.close()
+      annee = "0000"
+      mois_str, jour = "inconnu", "00" 
+  for variante in [mois_str[:3].capitalize(), mois_str[:4].capitalize()]:
+    if variante in dic_mois:
+      mois_int = dic_mois[variante]
+      break
+    else:
+      mois_int="01"#TODO correct this
+  if len(jour)==1:
+    jour = "0"+jour
+  try:
+    date_format2 = f"{annee}-{mois_int}-{jour}"
+  except:
+    print(date_str)
+    1/0
+  return date_format2
+
+def decouper_mots(texte):
+  mots = re.findall("[a-zA-ZÀ-ÿ][a-zA-ZÀ-ÿ-]*", texte)
+  return mots
+
+def napalm(chaine):
+  chaine = chaine.strip()
+  chaine = re.sub(r'[^\w\s]','',chaine)
+  chaine = re.sub(' ','_',chaine)
+  return chaine
+
+def mkdirs(path, verbose = False):
+  try:
+    os.makedirs(path)
+  except:
+    if verbose==True:
+      print("%s already exists"%path)
+    pass
 
 def variance(tableau):
     m=moyenne(tableau)
@@ -49,7 +107,7 @@ def write_utf8(path, out, verbose =True, is_json = False):
   if is_json==False:
     w.write(out)
   else:
-    w.write(json.dumps(out, indent=2))
+    w.write(json.dumps(out, indent=2, ensure_ascii=False))
   w.close()
   if verbose:
     print("Output written in '%s'"%path)
